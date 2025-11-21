@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lynn’s Self-Care Check 🐢</title>
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      background: #d0f0fd; /* light blue background */
+      text-align: center;
+      padding: 30px;
+    }
+    #question-box {
+      margin-top: 50px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      background: #87cefa; /* light blue button */
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #00bfff; /* darker blue on hover */
+    }
+    #cat {
+      font-size: 50px;
+      margin-top: 20px;
+    }
+    #progress-container {
+      width: 100%;
+      background: #ddd;
+      border-radius: 20px;
+      margin-top: 20px;
+    }
+    #progress-bar {
+      width: 0%;
+      height: 20px;
+      background: #87cefa;
+      border-radius: 20px;
+      transition: width 0.5s;
+    }
+    #final-message {
+      display: none;
+      margin-top: 30px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: left;
+      white-space: pre-line;
+    }
+    #music-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #87cefa;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lynn’s Self-Care Check 🐢</h1>
+  
+  <!-- Music toggle -->
+  <div id="music-toggle">🎵</div>
+  <audio id="bg-music" src="lvs.mp3" loop></audio>
+
+  <!-- Cat mascot -->
+  <div id="cat">😺</div>
+
+  <!-- Progress bar -->
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+
+  <!-- Question box -->
+  <div id="question-box">
+    <h2 id="question">Click start to begin 🌸</h2>
+    <div id="options"></div>
+    <button onclick="nextQuestion()" id="start-btn">Start</button>
+  </div>
+
+  <!-- Final message -->
+  <div id="final-message"></div>
+
+  <script>
+    const questions = [
+      { q: "Have you had enough water today?", yes: "Good! Stay hydrated 🌊", no: "Don’t forget to drink some, your brain needs it 🧠✨", type: "water" },
+      { q: "Did you eat something nourishing today?", yes: "Perfect fuel for your brain 🚀", no: "Don’t forget to grab a snack ✨", type: "food" },
+      { q: "Did you take a short break?", yes: "Great! Breaks help you recharge 🔋", no: "Even 5 minutes can refresh your focus 🌸", type: "break" },
+      { q: "How’s your mood right now?", good: "That’s wonderful! Keep that energy alive 🌟", bad: "You’re doing fine, step by step 💪", type: "mood" },
+      { q: "Do you believe in yourself for this exam?", yes: "That’s the spirit! You’re stronger than you think 💪🔥", no: "That’s fine… I believe in you 💖", type: "believe" },
+      { q: "Did you get enough sleep last night?", yes: "Rested mind = sharp focus ✨", no: "Don’t worry, just do your best 🛌", type: "sleep" },
+      { q: "Did you smile or laugh today?", yes: "See? Happiness is your secret weapon 🌟", no: "Here’s a virtual smile just for you 😸💖", type: "playful" },
+      { q: "Did you put your phone away while studying?", yes: "Wow, focus level: pro gamer 🎮✨", no: "That’s okay, try focus sprints ⏱️", type: "focus" },
+      { q: "Have you talked to someone you love today?", yes: "Connections keep your heart light 💞", no: "Even a tiny message counts 🪽", type: "connection" },
+      { q: "Did you remind yourself how capable you are?", yes: "That confidence looks good on you 🌟", no: "Here’s your reminder: you *are* capable 💖", type: "believe" }
+    ];
+
+    let currentQ = -1;
+    let progress = 0;
+
+    function nextQuestion() {
+      currentQ++;
+      document.getElementById("start-btn").style.display = "none";
+      if (currentQ < questions.length) {
+        const q = questions[currentQ];
+        document.getElementById("question").innerText = q.q;
+
+        if (q.type === "mood") {
+          document.getElementById("options").innerHTML = `
+            <button onclick="answer('good')">Good</button>
+            <button onclick="answer('bad')">Bad</button>
+          `;
+        } else {
+          document.getElementById("options").innerHTML = `
+            <button onclick="answer('yes')">Yes</button>
+            <button onclick="answer('no')">No</button>
+          `;
+        }
+      } else {
+        document.getElementById("question-box").style.display = "none";
+        document.getElementById("final-message").style.display = "block";
+        document.getElementById("final-message").innerHTML = `
+          <button onclick="revealLetter()">💌 You have a message, click to reveal 💌</button>
+        `;
+      }
+    }
+
+    function answer(choice) {
+      const q = questions[currentQ];
+      const message = q[choice];
+      document.getElementById("options").innerHTML = `<p>${message}</p><button onclick="nextQuestion()">Next ➡️</button>`;
+      
+      // cat reaction based on question type and answer
+      const cat = document.getElementById("cat");
+      switch(q.type) {
+        case "water":
+        case "food":
+          cat.innerText = choice === 'yes' ? "😺" : "😿"; break;
+        case "break":
+        case "playful":
+          cat.innerText = choice === 'yes' ? "😸" : "😿"; break;
+        case "mood":
+          cat.innerText = choice === 'good' ? "😺" : "😿"; break;
+        case "believe":
+          cat.innerText = choice === 'yes' ? "😻" : "😿"; break;
+        case "sleep":
+          cat.innerText = choice === 'yes' ? "😴" : "😿"; break;
+        case "focus":
+          cat.innerText = choice === 'yes' ? "😼" : "😿"; break;
+        case "connection":
+          cat.innerText = choice === 'yes' ? "😺" : "😿"; break;
+        default:
+          cat.innerText = "😺";
+      }
+
+      // progress update
+      progress = ((currentQ+1) / questions.length) * 100;
+      document.getElementById("progress-bar").style.width = progress + "%";
+    }
+
+    function revealLetter() {
+      const letter = `Hey lynn, for this upcoming exam week, I hope u can fully focused and ready while also taking care of yourself! 
+Don’t forget to drink plenty of water, eat nutritious and delicious food, rest well, and don’t hesitate to take a break if you’re tired :D
+
+I have no idea what kind of exam in music major (hmm probably more project based?) but I know you can do it and you too must believe in yourself 
+
+If it’s paper based, hope you can answer all the questions right, and if it’s a project based, I hope you can finished the project on time and doing it well!
+
+After the exams all done, don’t forget to reward yourself, cus u deserve it sm!!!`;
+
+      let i = 0;
+      document.getElementById("final-message").innerHTML = "<p id='typed'></p>";
+      const typed = document.getElementById("typed");
+      
+      function typeWriter() {
+        if (i < letter.length) {
+          typed.innerHTML += letter.charAt(i);
+          i++;
+          setTimeout(typeWriter, 50);
+        }
+      }
+      typeWriter();
+    }
+
+    // music toggle
+    const toggle = document.getElementById("music-toggle");
+    const music = document.getElementById("bg-music");
+    let playing = false;
+
+    toggle.addEventListener("click", () => {
+      if (playing) {
+        music.pause();
+        toggle.innerText = "🎵";
+      } else {
+        music.play();
+        toggle.innerText = "🔇";
+      }
+      playing = !playing;
+    });
+  </script>
+</body>
+</html>
